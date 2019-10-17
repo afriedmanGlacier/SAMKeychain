@@ -37,12 +37,31 @@ NSString *const kSAMKeychainWhereKey = @"svce";
 	return query.password;
 }
 
++ (nullable NSString *)passwordForService:(NSString *)serviceName account:(NSString *)account accessGroup:(NSString *)accessGroup error:(NSError *__autoreleasing *)error {
+	SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
+	query.accessGroup = accessGroup;
+	query.service = serviceName;
+	query.account = account;
+	[query fetch:error];
+	return query.password;
+}
+
 + (nullable NSData *)passwordDataForService:(NSString *)serviceName account:(NSString *)account {
 	return [self passwordDataForService:serviceName account:account error:nil];
 }
 
 + (nullable NSData *)passwordDataForService:(NSString *)serviceName account:(NSString *)account error:(NSError **)error {
     SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
+    query.service = serviceName;
+    query.account = account;
+    [query fetch:error];
+
+    return query.passwordData;
+}
+
++ (nullable NSData *)passwordDataForService:(NSString *)serviceName account:(NSString *)account accessGroup:(NSString *)accessGroup error:(NSError **)error {
+    SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
+	query.accessGroup = accessGroup;
     query.service = serviceName;
     query.account = account;
     [query fetch:error];
@@ -63,6 +82,14 @@ NSString *const kSAMKeychainWhereKey = @"svce";
 	return [query deleteItem:error];
 }
 
++ (BOOL)deletePasswordForService:(NSString *)serviceName account:(NSString *)account accessGroup:(NSString *)accessGroup error:(NSError *__autoreleasing *)error {
+	SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
+	query.accessGroup = accessGroup;
+	query.service = serviceName;
+	query.account = account;
+	return [query deleteItem:error];
+}
+
 
 + (BOOL)setPassword:(NSString *)password forService:(NSString *)serviceName account:(NSString *)account {
 	return [self setPassword:password forService:serviceName account:account error:nil];
@@ -77,6 +104,15 @@ NSString *const kSAMKeychainWhereKey = @"svce";
 	return [query save:error];
 }
 
++ (BOOL)setPassword:(NSString *)password forService:(NSString *)serviceName account:(NSString *)account accessGroup:(NSString *)accessGroup error:(NSError *__autoreleasing *)error {
+	SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
+	query.accessGroup = accessGroup;
+	query.service = serviceName;
+	query.account = account;
+	query.password = password;
+	return [query save:error];
+}
+
 + (BOOL)setPasswordData:(NSData *)password forService:(NSString *)serviceName account:(NSString *)account {
 	return [self setPasswordData:password forService:serviceName account:account error:nil];
 }
@@ -84,6 +120,15 @@ NSString *const kSAMKeychainWhereKey = @"svce";
 
 + (BOOL)setPasswordData:(NSData *)password forService:(NSString *)serviceName account:(NSString *)account error:(NSError **)error {
     SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
+    query.service = serviceName;
+    query.account = account;
+    query.passwordData = password;
+    return [query save:error];
+}
+
++ (BOOL)setPasswordData:(NSData *)password forService:(NSString *)serviceName account:(NSString *)account accessGroup:(NSString *)accessGroup error:(NSError **)error {
+    SAMKeychainQuery *query = [[SAMKeychainQuery alloc] init];
+	query.accessGroup = accessGroup;
     query.service = serviceName;
     query.account = account;
     query.passwordData = password;
