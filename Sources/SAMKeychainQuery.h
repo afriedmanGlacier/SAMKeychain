@@ -126,6 +126,17 @@ typedef NS_ENUM(NSUInteger, SAMKeychainQuerySynchronizationMode) {
  */
 - (BOOL)fetch:(NSError **)error;
 
+/**
+Fetch the keychain item that matches the given account, service, and access
+group. The `password` and `passwordData` properties will be populated unless
+an error occurs. The values of `password` and `passwordData` are ignored when
+fetching. Under certain conditions the kSecAttrAccessible needs to be added to the fetch,
+
+@param error Populated should an error occur.
+
+@return `YES` if fetching was successful, `NO` otherwise.
+*/
+- (BOOL)fetchWithAccessibility:(NSError **)error;
 
 ///-----------------------------
 /// @name Synchronization Status

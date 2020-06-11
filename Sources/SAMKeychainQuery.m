@@ -155,6 +155,38 @@
 }
 
 
+- (BOOL)fetchWithAccessibility:(NSError *__autoreleasing *)error {
+    OSStatus status = SAMKeychainErrorBadArguments;
+    if (!self.service || !self.account) {
+        if (error) {
+            *error = [[self class] errorWithCode:status];
+        }
+        return NO;
+    }
+
+    CFTypeRef result = NULL;
+    NSMutableDictionary *query = [self query];
+    [query setObject:@YES forKey:(__bridge id)kSecReturnData];
+    [query setObject:(__bridge id)kSecMatchLimitOne forKey:(__bridge id)kSecMatchLimit];
+    
+    CFTypeRef accessibilityType = [SAMKeychain accessibilityType];
+    if (accessibilityType) {
+        [query setObject:(__bridge id)accessibilityType forKey:(__bridge id)kSecAttrAccessible];
+    }
+    
+    status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &result);
+    
+    if (status != errSecSuccess) {
+        if (error) {
+            *error = [[self class] errorWithCode:status];
+        }
+        return NO;
+    }
+
+    self.passwordData = (__bridge_transfer NSData *)result;
+    return YES;
+}
+
 #pragma mark - Accessors
 
 - (void)setPasswordObject:(id<NSCoding>)object {
